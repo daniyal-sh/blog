@@ -1,0 +1,31 @@
+---
+import type { Post } from '../lib/posts';
+import { url } from '../utils/url';
+
+interface Props {
+  newer?: Post;
+  older?: Post;
+}
+
+const { newer, older } = Astro.props;
+const single = !newer || !older;
+---
+
+{
+  (newer || older) && (
+    <nav class:list={['post-nav', single && 'is-single']} aria-label="More posts">
+      {newer && (
+        <a href={url(`/posts/${newer.id}/`)}>
+          <span>Newer</span>
+          <strong>{newer.data.title}</strong>
+        </a>
+      )}
+      {older && (
+        <a href={url(`/posts/${older.id}/`)}>
+          <span>Older</span>
+          <strong>{older.data.title}</strong>
+        </a>
+      )}
+    </nav>
+  )
+}

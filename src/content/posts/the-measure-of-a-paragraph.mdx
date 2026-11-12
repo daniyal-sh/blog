@@ -1,0 +1,39 @@
+---
+title: "The measure of a paragraph"
+description: "What 42rem actually means for the reading experience."
+date: 2025-12-03
+---
+
+The most important number in this site's CSS is not a color or a font size. It is the width of the reading column: `42rem`.
+
+That number is not arbitrary. It is a rough answer to a question typographers have been asking for centuries: how many characters should fit on a line before the eye loses its place?
+
+## The measure
+
+A comfortable line is usually somewhere between 45 and 75 characters. Shorter lines feel choppy; longer lines make it easy to read the same line twice. At 19px, a 42rem column lands near the upper end of that range for this typeface.
+
+The exact number depends on the font. A wide grotesque and a narrow serif can share a font size and produce very different line lengths. This is why `ch` units and careful testing matter more than copying a value from someone else's stylesheet.
+
+| Measure | Approx. characters | Feel |
+| --- | --- | --- |
+| 32rem | 42–48 | Compact, almost columnar |
+| 42rem | 58–66 | Comfortable for long reading |
+| 52rem | 72–82 | Loose, better for wide screens |
+
+## Type at nineteen pixels
+
+Body text on the web is often 16px. That is a fine default for interface text, but a long essay benefits from a little more room. I settled on 19px for the serif body, with a line height of 1.75.
+
+The size is large enough to feel unhurried without looking like a large-print edition. The line height gives the eye a clear path back to the start of the next line. Neither value is precious; both are easy to change if the writing changes.
+
+> Typography is the craft of making reading feel inevitable.
+
+## Line height and rhythm
+
+Spacing is where a page either settles or fidgets. Headings need more space above than below, so they attach to the text they introduce. Paragraphs need enough space to separate ideas without turning the page into a ladder.
+
+I use a simple rhythm: one and a third lines between paragraphs, two and a half lines above a section heading, and a single hairline when a pause needs to be visible. The rules are less important than the consistency.[^1]
+
+A good measure is invisible. You should not notice the column width any more than you notice the air in a room. You just read.
+
+[^1]: The exception is code and tables, which are allowed to break out of the measure when they need to. Prose is not the only kind of content on a page.

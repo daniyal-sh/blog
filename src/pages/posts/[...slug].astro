@@ -1,0 +1,97 @@
+---
+import { render } from 'astro:content';
+import PostNav from '../../components/PostNav.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { SITE } from '../../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAdjacentPosts, getPosts, type Post } from '../../lib/posts';
+import { formatDate, readingTime } from '../../utils/format';
+import { absoluteUrl } from '../../utils/url';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const posts = await getPosts();
+const { newer, older } = getAdjacentPosts(posts, post.id);
+const toc = headings.filter(
+  (heading) =>
+    (heading.depth === 2 || heading.depth === 3) && heading.slug !== 'footnote-label',
+);
+const minutes = readingTime(post.body);
+const ogImage = `/og/${post.id}.png`;
+const published = post.data.date;
+const updated = post.data.updated;
+const site = Astro.site ?? new URL('https://daniyal-sh.github.io');
+const canonical = new URL(Astro.url.pathname, site);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: published.toISOString(),
+  dateModified: (updated ?? published).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: SITE.author,
+  },
+  mainEntityOfPage: canonical.href,
+  image: absoluteUrl(ogImage, site),
+  url: canonical.href,
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  image={ogImage}
+  type="article"
+  published={published}
+  updated={updated}
+  jsonLd={jsonLd}
+>
+  <article class="post">
+    <div class="post-layout">
+      <div class="post-main">
+        <header class="post-header">
+          <h1 class="post-title">{post.data.title}</h1>
+          <p class="post-description">{post.data.description}</p>
+          <div class="post-meta">
+            <time datetime={published.toISOString()}>{formatDate(published)}</time>
+            <span class="sep" aria-hidden="true">·</span>
+            <span>{minutes} min read</span>
+            {
+              updated && (
+                <>
+                  <span class="sep" aria-hidden="true">·</span>
+                  <span>Updated {formatDate(updated)}</span>
+                </>
+              )
+            }
+          </div>
+        </header>
+
+        {toc.length > 1 && <TableOfContents headings={toc} variant="mobile" />}
+
+        <div class="post-body prose">
+          <Content />
+        </div>
+
+        <PostNav newer={newer} older={older} />
+      </div>
+
+      {toc.length > 1 && <TableOfContents headings={toc} variant="desktop" />}
+    </div>
+  </article>
+</BaseLayout>

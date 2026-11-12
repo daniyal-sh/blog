@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" fill="none">
+  <g stroke="#8A8478" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="40" y1="120" x2="1160" y2="120" opacity="0.35" />
+    <line x1="40" y1="120" x2="40" y2="132" opacity="0.35" />
+    <line x1="1160" y1="120" x2="1160" y2="132" opacity="0.35" />
+
+    <rect x="40" y="190" width="220" height="88" rx="10" />
+    <rect x="340" y="190" width="220" height="88" rx="10" />
+    <rect x="640" y="190" width="220" height="88" rx="10" />
+    <rect x="940" y="190" width="220" height="88" rx="10" />
+
+    <line x1="278" y1="234" x2="322" y2="234" />
+    <path d="M314 228 l8 6 -8 6" />
+    <line x1="578" y1="234" x2="622" y2="234" />
+    <path d="M614 228 l8 6 -8 6" />
+    <line x1="878" y1="234" x2="922" y2="234" />
+    <path d="M914 228 l8 6 -8 6" />
+
+    <circle cx="40" cy="234" r="3" fill="#8A8478" stroke="none" />
+    <circle cx="1160" cy="234" r="3" fill="#8A8478" stroke="none" />
+  </g>
+
+  <g fill="#8A8478" font-family="Inter, Helvetica, Arial, sans-serif">
+    <text x="40" y="78" font-size="13" letter-spacing="2.4">THE PIPELINE</text>
+    <text x="40" y="410" font-size="18">Content in, static files out.</text>
+    <text x="1160" y="410" font-size="14" text-anchor="end">No server between visits.</text>
+
+    <text x="150" y="232" font-size="24" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">MDX</text>
+    <text x="150" y="256" font-size="13" text-anchor="middle">posts/*.mdx</text>
+
+    <text x="450" y="232" font-size="24" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">Astro</text>
+    <text x="450" y="256" font-size="13" text-anchor="middle">build</text>
+
+    <text x="750" y="232" font-size="24" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">HTML</text>
+    <text x="750" y="256" font-size="13" text-anchor="middle">dist/</text>
+
+    <text x="1050" y="232" font-size="24" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">Pages</text>
+    <text x="1050" y="256" font-size="13" text-anchor="middle">github.io</text>
+  </g>
+</svg>

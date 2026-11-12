@@ -1,0 +1,214 @@
+---
+import { Font } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  published?: Date;
+  updated?: Date;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          const dark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch {
+          document.documentElement.classList.toggle(
+            'dark',
+            window.matchMedia('(prefers-color-scheme: dark)').matches,
+          );
+        }
+      })();
+    </script>
+    <BaseHead {...props} />
+    <Font
+      cssVariable="--font-newsreader"
+      preload={[{ weight: 400, style: 'normal', subset: 'latin' }]}
+    />
+    <Font cssVariable="--font-inter" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" class="shell main">
+      <slot />
+    </main>
+    <Footer />
+
+    {SITE.analytics.goatcounter && (
+      <script
+        is:inline
+        async
+        src="https://gc.zgo.at/count.js"
+        data-goatcounter={`https://${SITE.analytics.goatcounter}.goatcounter.com/count`}
+      ></script>
+    )}
+
+    <script>
+      const THEME_KEY = 'theme';
+      let tocObserver: IntersectionObserver | undefined;
+      let hasCountedInitialPage = false;
+
+      function getStoredTheme(): string | null {
+        try {
+          return localStorage.getItem(THEME_KEY);
+        } catch {
+          return null;
+        }
+      }
+
+      function applyStoredTheme() {
+        const stored = getStoredTheme();
+        const dark = stored
+          ? stored === 'dark'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', dark);
+      }
+
+      function syncThemeToggle() {
+        const dark = document.documentElement.classList.contains('dark');
+        const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+
+        document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
+        });
+      }
+
+      function setupThemeToggle() {
+        document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+          if (button.dataset.bound === 'true') return;
+          button.dataset.bound = 'true';
+
+          button.addEventListener('click', () => {
+            const dark = !document.documentElement.classList.contains('dark');
+            document.documentElement.classList.toggle('dark', dark);
+            try {
+              localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+            } catch {
+              // The theme still works for this visit if storage is unavailable.
+            }
+            syncThemeToggle();
+          });
+        });
+
+        syncThemeToggle();
+      }
+
+      function setupCodeCopy() {
+        document.querySelectorAll<HTMLElement>('pre.astro-code').forEach((pre) => {
+          if (pre.closest('.code-frame')) return;
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-frame';
+          pre.replaceWith(wrapper);
+          wrapper.appendChild(pre);
+
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'code-copy';
+          button.textContent = 'Copy';
+          button.setAttribute('aria-label', 'Copy code');
+
+          button.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(pre.innerText);
+              button.textContent = 'Copied';
+              button.classList.add('is-copied');
+              window.setTimeout(() => {
+                button.textContent = 'Copy';
+                button.classList.remove('is-copied');
+              }, 1600);
+            } catch {
+              button.textContent = 'Failed';
+            }
+          });
+
+          wrapper.appendChild(button);
+        });
+      }
+
+      function setupToc() {
+        tocObserver?.disconnect();
+
+        const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+        if (links.length === 0) return;
+
+        const linksById = new Map<string, HTMLAnchorElement[]>();
+        links.forEach((link) => {
+          const id = decodeURIComponent(link.hash.slice(1));
+          const existing = linksById.get(id) ?? [];
+          existing.push(link);
+          linksById.set(id, existing);
+        });
+
+        const headings = Array.from(
+          document.querySelectorAll<HTMLElement>('.prose h2[id], .prose h3[id]'),
+        );
+        if (headings.length === 0) return;
+
+        tocObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              links.forEach((link) => link.classList.remove('is-active'));
+              linksById.get(entry.target.id)?.forEach((link) => link.classList.add('is-active'));
+            });
+          },
+          { rootMargin: '0px 0px -72% 0px', threshold: 0 },
+        );
+
+        headings.forEach((heading) => tocObserver?.observe(heading));
+      }
+
+      document.addEventListener('astro:after-swap', applyStoredTheme);
+
+      document.addEventListener('astro:page-load', () => {
+        setupThemeToggle();
+        setupCodeCopy();
+        setupToc();
+
+        if (!hasCountedInitialPage) {
+          hasCountedInitialPage = true;
+          return;
+        }
+
+        const goatcounter = (
+          window as unknown as {
+            goatcounter?: { count?: (options?: { path?: string }) => void };
+          }
+        ).goatcounter;
+        goatcounter?.count?.({ path: window.location.pathname });
+      });
+
+      window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', (event) => {
+          if (getStoredTheme()) return;
+          document.documentElement.classList.toggle('dark', event.matches);
+          syncThemeToggle();
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+---
+import { projects } from '../data/projects';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Projects"
+  description="Things I’ve built, maintained, or am slowly tinkering with."
+>
+  <div class="page-header">
+    <p class="eyebrow">Projects</p>
+    <h1 class="page-title">Selected work</h1>
+    <p class="page-lede">Things I’ve built, maintained, or am slowly tinkering with.</p>
+  </div>
+
+  <ul class="project-list">
+    {
+      projects.map((project) => (
+        <li class="project-item">
+          {project.href ? (
+            <a class="project-link" href={project.href}>
+              <span class="project-year">{project.year}</span>
+              <span class="project-body">
+                <span class="project-name">{project.name}</span>
+                <span class="project-desc">{project.description}</span>
+              </span>
+              <span class="project-arrow" aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <div class="project-link">
+              <span class="project-year">{project.year}</span>
+              <span class="project-body">
+                <span class="project-name">{project.name}</span>
+                <span class="project-desc">{project.description}</span>
+              </span>
+              <span class="project-arrow" aria-hidden="true">·</span>
+            </div>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  {projects.length === 0 && <p class="project-empty">More soon.</p>}
+</BaseLayout>

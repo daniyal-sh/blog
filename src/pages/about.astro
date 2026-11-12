@@ -1,0 +1,54 @@
+---
+import { SITE, SOCIALS } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../utils/url';
+---
+
+<BaseLayout
+  title="About"
+  description={`About ${SITE.author} — a developer in ${SITE.location}.`}
+>
+  <div class="page-header">
+    <p class="eyebrow">About</p>
+    <h1 class="page-title">I’m {SITE.author}.</h1>
+    <p class="page-lede">
+      A developer in {SITE.location}, writing about design, code, and the small decisions that
+      make software feel good to use.
+    </p>
+  </div>
+
+  <div class="prose page-prose">
+    <p>
+      This is where I keep notes on the things I’m building and learning — mostly to think
+      out loud, occasionally in the hope that something here is useful to someone else. I care
+      about quiet interfaces, fast pages, and tools that stay out of the way.
+    </p>
+
+    <h2>Elsewhere</h2>
+    <ul>
+      {
+        SOCIALS.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+      <li><a href={url('/rss.xml')}>RSS</a></li>
+    </ul>
+
+    <h2>About this site</h2>
+    <p>
+      Built with <a href="https://astro.build">Astro</a> and MDX, deployed to GitHub Pages.
+      The design is intentionally quiet: one column, two typefaces, and no unnecessary
+      JavaScript.
+    </p>
+    <p>There are no tracking cookies here.</p>
+    {
+      SITE.analytics.goatcounter && (
+        <p>
+          Page views are counted with GoatCounter, which is cookieless and privacy-friendly.
+        </p>
+      )
+    }
+  </div>
+</BaseLayout>

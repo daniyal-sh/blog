@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+import { formatDate, readingTime } from '../utils/format';
+import { url } from '../utils/url';
+
+const posts = await getPosts();
+const years = [...new Set(posts.map((post) => post.data.date.getUTCFullYear()))];
+const groups = years.map((year) => ({
+  year,
+  posts: posts.filter((post) => post.data.date.getUTCFullYear() === year),
+}));
+const postCount = (count: number) => `${count} ${count === 1 ? 'post' : 'posts'}`;
+const lede = `Every post on the site, newest first. ${postCount(posts.length)} so far.`;
+---
+
+<BaseLayout title="Archive" description="Every post on the site, grouped by year.">
+  <div class="page-header">
+    <p class="eyebrow">Archive</p>
+    <h1 class="page-title">Everything, in order</h1>
+    <p class="page-lede">{lede}</p>
+  </div>
+
+  <div class="archive">
+    {
+      groups.map((group) => (
+        <section aria-labelledby={`year-${group.year}`}>
+          <div class="archive-year">
+            <h2 id={`year-${group.year}`}>{group.year}</h2>
+            <span>{postCount(group.posts.length)}</span>
+          </div>
+          <ul class="archive-list">
+            {group.posts.map((post) => (
+              <li class="archive-item">
+                <a class="archive-link" href={url(`/posts/${post.id}/`)}>
+                  <time class="archive-date" datetime={post.data.date.toISOString()}>
+                    {formatDate(post.data.date)}
+                  </time>
+                  <span class="archive-title">{post.data.title}</span>
+                  <span class="archive-time">{readingTime(post.body)} min</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

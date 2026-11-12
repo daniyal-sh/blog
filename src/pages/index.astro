@@ -1,0 +1,38 @@
+---
+import PostList from '../components/PostList.astro';
+import { SITE } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.name,
+  url: Astro.site?.href,
+  description: SITE.description,
+  author: {
+    '@type': 'Person',
+    name: SITE.author,
+  },
+};
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <section class="intro">
+    <p class="eyebrow">{SITE.author} — {SITE.location}</p>
+    <h1>Notes on design, code, and <em>everything in between</em>.</h1>
+    <p class="lede">
+      A quiet place for things I’m thinking about, building, and learning. Written slowly,
+      published occasionally.
+    </p>
+  </section>
+
+  <section class="writing" aria-labelledby="writing-heading">
+    <div class="section-head">
+      <h2 id="writing-heading">Writing</h2>
+      <span>{posts.length} {posts.length === 1 ? 'post' : 'posts'}</span>
+    </div>
+    <PostList posts={posts} />
+  </section>
+</BaseLayout>

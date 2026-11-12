@@ -1,0 +1,80 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { SITE } from '../config';
+import { absoluteUrl, url } from '../utils/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  published?: Date;
+  updated?: Date;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og/default.png',
+  type = 'website',
+  published,
+  updated,
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://daniyal-sh.github.io');
+// 404 and other noindex pages should not advertise a made-up URL.
+const canonical = noindex ? site : new URL(Astro.url.pathname, site);
+const pageTitle = title ? `${title} — ${SITE.name}` : `${SITE.name} — ${SITE.description}`;
+const ogImage = absoluteUrl(image, site);
+const ogImageAlt = `${SITE.name} — ${description}`;
+---
+
+<meta name="generator" content={Astro.generator} />
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogImageAlt} />
+<meta property="og:locale" content="en_US" />
+{published && <meta property="article:published_time" content={published.toISOString()} />}
+{updated && <meta property="article:modified_time" content={updated.toISOString()} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={ogImageAlt} />
+
+<!-- Theme -->
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#faf7f0" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)" />
+
+<!-- Feeds and icons -->
+<link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${SITE.name} — RSS`}
+  href={url('/rss.xml')}
+/>
+<link rel="sitemap" href={url('/sitemap-index.xml')} />
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+<ClientRouter />

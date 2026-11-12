@@ -1,0 +1,48 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  variant?: 'desktop' | 'mobile';
+}
+
+const { headings, variant = 'desktop' } = Astro.props;
+---
+
+{
+  variant === 'mobile' ? (
+    <details class="toc-mobile">
+      <summary>On this page</summary>
+      <nav aria-label="Table of contents">
+        <ul class="toc-list">
+          {headings.map((heading) => (
+            <li class={`depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`} data-toc-link>
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  ) : (
+    <aside class="toc-desktop" aria-label="Table of contents">
+      <p class="toc-label">On this page</p>
+      <nav>
+        <ul class="toc-list">
+          {headings.map((heading) => (
+            <li class={`depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`} data-toc-link>
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}

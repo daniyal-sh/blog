@@ -1,0 +1,71 @@
+---
+title: "A static blog that feels alive"
+description: "Astro, MDX, and a few lines of JavaScript. How this site is put together."
+date: 2026-10-19
+---
+
+import Figure from '../../components/Figure.astro';
+
+This site is a folder of Markdown files, a build step, and a small amount of CSS. There is no database and no server running between visits. The whole thing is compiled ahead of time and handed to GitHub Pages as static files.
+
+That sounds austere. But a static site does not have to feel static. The distinction is mostly about how much motion you allow and how carefully you place it.
+
+## Content as files
+
+Each post lives in `src/content/posts` as an `.mdx` file with a little frontmatter:
+
+```md
+---
+title: "A static blog that feels alive"
+description: "A short description for the post list, RSS, and social cards."
+date: 2026-10-19
+---
+```
+
+The collection schema validates the shape of that frontmatter at build time. If I forget a title, the build fails rather than publishing a blank heading. That is the kind of safety I want from a writing tool: quiet when things are correct, loud when they are not.
+
+MDX adds the ability to drop a component into a post when plain Markdown is not enough. This post uses one for the figure below.
+
+<Figure
+  src="/images/pipeline.svg"
+  alt="A diagram showing MDX files moving through Astro and becoming static HTML for GitHub Pages."
+  caption="Content goes in, static files come out. The diagram is the whole architecture."
+  width={1200}
+  height={460}
+/>
+
+## The build
+
+Astro reads the collection, renders each entry, and writes a directory of HTML. Fonts are downloaded and self-hosted at build time. Open Graph images are generated from the same titles and descriptions you see on the page. The RSS feed and sitemap are produced from the same list of posts.
+
+The configuration is not much longer than this:
+
+```js
+export default defineConfig({
+  site: 'https://daniyal-sh.github.io',
+  integrations: [mdx(), sitemap()],
+  markdown: {
+    shikiConfig: {
+      themes: { light: 'vitesse-light', dark: 'vitesse-dark' },
+    },
+  },
+});
+```
+
+There is no client framework. The only JavaScript on the page is there to toggle the theme, copy code blocks, highlight the current section in the table of contents, and animate navigation between pages.
+
+## A little motion
+
+The page transitions are the part people notice first. They are small: a short crossfade, a shared sense of place, no sliding panels. The browser's View Transitions API does the work, and Astro's router makes the navigation feel continuous without turning the site into a single-page application.
+
+The key is restraint. A transition should explain that the page changed, not perform the change. If you notice the animation more than the content, it is doing too much.
+
+## What is intentionally missing
+
+No comments. No newsletter popup. No related-posts algorithm. No search box that opens a modal and asks for permission to be useful.
+
+Some of those may arrive later. The point is that each one has to earn its place. A personal site is not a product roadmap. It is a place to put things.
+
+The result is a site that loads in a blink and still has a little pulse. That is enough.
+
+[^1]: The View Transitions API is supported in Chromium browsers; Astro falls back gracefully elsewhere. Astro's router also checks for reduced-motion preferences, so the crossfade is skipped when a visitor asks for less animation.

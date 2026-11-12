@@ -27,7 +27,9 @@ const {
 
 const site = Astro.site ?? new URL('https://daniyal-sh.github.io');
 // 404 and other noindex pages should not advertise a made-up URL.
-const canonical = noindex ? site : new URL(Astro.url.pathname, site);
+const canonical = noindex
+  ? new URL(url('/'), site)
+  : new URL(Astro.url.pathname, site);
 const pageTitle = title ? `${title} — ${SITE.name}` : `${SITE.name} — ${SITE.description}`;
 const ogImage = absoluteUrl(image, site);
 const ogImageAlt = `${SITE.name} — ${description}`;

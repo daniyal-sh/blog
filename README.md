@@ -79,19 +79,20 @@ Design tokens are at the top of `src/styles/global.css`. The two fonts are confi
 
 ## Deployment
 
-This repository is set up as a GitHub user page, so it must be named
-`daniyal-sh.github.io`. The site is deployed by `.github/workflows/deploy.yml` on every
-push to `main`.
+This repository is a GitHub Pages project site named `blog`, served at
+`https://daniyal-sh.github.io/blog/`. The `base` value in `astro.config.mjs` is `/blog`,
+so all internal links, fonts, Open Graph images, RSS, and sitemap entries include that
+prefix. The site is deployed by `.github/workflows/deploy.yml` on every push to `main`.
 
 1. In the repository, open **Settings → Pages**.
 2. Set **Source** to **GitHub Actions**.
 3. Push to `main`, or run the workflow manually from the **Actions** tab.
 
-The production URL is `https://daniyal-sh.github.io/`.
+The production URL is `https://daniyal-sh.github.io/blog/`.
 
-If you rename the repository or move to a custom domain, update `site` in
-`astro.config.mjs`. For a project page (e.g. `username.github.io/blog`), also set `base`
-to `'/blog'` — internal links already use the configured base path.
+If you rename the repository or move to a custom domain, update `site` and `base` in
+`astro.config.mjs`. For a user page (`username.github.io`), set `base` to `/` and use the
+root URL as `site`.
 
 ## Notes
 

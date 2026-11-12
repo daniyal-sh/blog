@@ -6,11 +6,13 @@ import { url } from '../utils/url';
 
 export const GET: APIRoute = async (context) => {
   const posts = await getPosts();
+  const site = context.site ?? new URL('https://daniyal-sh.github.io');
+  const feedSite = new URL(import.meta.env.BASE_URL, site);
 
   return rss({
     title: SITE.name,
     description: SITE.description,
-    site: context.site ?? 'https://daniyal-sh.github.io',
+    site: feedSite,
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

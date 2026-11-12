@@ -3,13 +3,14 @@ import PostList from '../components/PostList.astro';
 import { SITE } from '../config';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPosts } from '../lib/posts';
+import { absoluteUrl } from '../utils/url';
 
 const posts = await getPosts();
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE.name,
-  url: Astro.site?.href,
+  url: absoluteUrl('/', Astro.site),
   description: SITE.description,
   author: {
     '@type': 'Person',

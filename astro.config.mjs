@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://daniyal-sh.github.io',
+  base: '/blog',
   integrations: [
     mdx(),
     sitemap({

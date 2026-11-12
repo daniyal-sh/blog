@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-The site runs at `http://localhost:4321`.
+The site runs at `http://localhost:4321/blog/`.
 
 ```sh
 npm run build    # production build in dist/
